@@ -5,13 +5,13 @@ import { Todo } from '../../types/Todo';
 type Props = {
   visibleTodos: Todo[];
   onSelect: (todo: Todo) => void;
-  todoId?: number;
+  selectedTodoId?: number;
 };
 
 export const TodoList: React.FC<Props> = ({
   visibleTodos,
   onSelect,
-  todoId,
+  selectedTodoId,
 }) => {
   return (
     <table className="table is-narrow is-fullwidth">
@@ -29,7 +29,7 @@ export const TodoList: React.FC<Props> = ({
       </thead>
       <tbody>
         {visibleTodos?.map(todo => {
-          const isSelected = todoId === todo.id;
+          const isSelected = selectedTodoId === todo.id;
           const isComplete = todo.completed;
 
           return (

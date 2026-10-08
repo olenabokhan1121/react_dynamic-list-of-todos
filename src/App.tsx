@@ -13,9 +13,9 @@ import { getTodos } from './api';
 export const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [selected, setSelected] = useState<Todo>();
+  const [selectedTodo, setSelectedTodo] = useState<Todo>();
   const [query, setQuery] = useState('');
-  const [status, setStatus] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
 
   const visibleTodos = useMemo(() => {
     let todoFiltered = [...todos];
@@ -26,8 +26,8 @@ export const App: React.FC = () => {
       );
     }
 
-    if (status !== 'all') {
-      switch (status) {
+    if (selectedStatus !== 'all') {
+      switch (selectedStatus) {
         case 'completed':
           todoFiltered = todoFiltered.filter(todo => todo.completed);
           break;
@@ -38,26 +38,12 @@ export const App: React.FC = () => {
     }
 
     return todoFiltered;
-  }, [todos, query, status]);
-
-  function handleSelectTodo(todo: Todo | undefined) {
-    setSelected(todo);
-  }
-
-  function handleQuery(searchQuery: string) {
-    setQuery(searchQuery);
-  }
-
-  function handleSelect(selectedStatus: string) {
-    setStatus(selectedStatus);
-  }
+  }, [todos, query, selectedStatus]);
 
   useEffect(() => {
     setLoading(true);
     getTodos()
-      .then(goodsFromServer => {
-        setTodos(goodsFromServer);
-      })
+      .then(setTodos)
       .finally(() => setLoading(false));
   }, []);
 
@@ -70,8 +56,8 @@ export const App: React.FC = () => {
 
             <div className="block">
               <TodoFilter
-                onSelectedStatus={handleSelect}
-                onQuery={handleQuery}
+                onSelectedStatus={setSelectedStatus}
+                onQuery={setQuery}
                 value={query}
               />
             </div>
@@ -80,16 +66,16 @@ export const App: React.FC = () => {
               {loading && <Loader />}
               <TodoList
                 visibleTodos={visibleTodos}
-                onSelect={handleSelectTodo}
-                todoId={selected?.id}
+                onSelect={setSelectedTodo}
+                selectedTodoId={selectedTodo?.id}
               />
             </div>
           </div>
         </div>
       </div>
 
-      {selected && (
-        <TodoModal selectedTodo={selected} onClose={handleSelectTodo} />
+      {selectedTodo && (
+        <TodoModal selectedTodo={selectedTodo} onClose={setSelectedTodo} />
       )}
     </>
   );
